@@ -9,8 +9,11 @@ Brief description here
 ...
 
 ## Running test
-```go
-dep ensure
-go test -cover
+```bash
+make test
+```
+or with coverage report
+```bash
+make test-report
 ```
 
