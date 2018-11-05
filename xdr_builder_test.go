@@ -8,11 +8,20 @@ import (
 )
 
 func TestSetAsset(t *testing.T) {
-	code := "ABC"
-	issuerPublicKey := "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR"
-	resp, err := xdrHelper.SetAsset(code, issuerPublicKey)
-	assert.NoError(t, err)
-	assert.NotNil(t, resp)
+	t.Run("Success", func(t *testing.T) {
+		code := "ABC"
+		issuerPublicKey := "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR"
+		resp, err := xdrHelper.SetAsset(code, issuerPublicKey)
+		assert.NoError(t, err)
+		assert.NotNil(t, resp)
+	})
+	t.Run("Fail, wrong issuerPublicKey", func(t *testing.T) {
+		code := "ABC"
+		issuerPublicKey := "asfewAS"
+		_, err := xdrHelper.SetAsset(code, issuerPublicKey)
+		assert.Error(t, err)
+	})
+
 }
 
 func TestSetNativeAsset(t *testing.T) {
@@ -22,11 +31,26 @@ func TestSetNativeAsset(t *testing.T) {
 }
 
 func TestCreateAccount(t *testing.T) {
-	destinationPublicKey := "GDKV36XRERL7HVQ5GKRAV47ZLEPIZMFM7MMLEO4NKQOWFPL5NCIEW3GR"
-	startingBalance := 100
-	resp, err := xdrHelper.CreateAccount(destinationPublicKey, startingBalance)
-	assert.NoError(t, err)
-	assert.NotNil(t, resp)
+	t.Run("Success", func(t *testing.T) {
+		destinationPublicKey := "GDKV36XRERL7HVQ5GKRAV47ZLEPIZMFM7MMLEO4NKQOWFPL5NCIEW3GR"
+		startingBalance := 100
+		resp, err := xdrHelper.CreateAccount(destinationPublicKey, startingBalance)
+		assert.NoError(t, err)
+		assert.NotNil(t, resp)
+	})
+	t.Run("Fail, wrong issuerPublicKey", func(t *testing.T) {
+		destinationPublicKey := "asdqw"
+		startingBalance := 100
+		_, err := xdrHelper.CreateAccount(destinationPublicKey, startingBalance)
+		assert.Error(t, err)
+	})
+	t.Run("Fail, wrong startingBalance", func(t *testing.T) {
+		destinationPublicKey := "GDKV36XRERL7HVQ5GKRAV47ZLEPIZMFM7MMLEO4NKQOWFPL5NCIEW3GR"
+		startingBalance := -1999
+		_, err := xdrHelper.CreateAccount(destinationPublicKey, startingBalance)
+		assert.Error(t, err)
+	})
+
 }
 
 func TestPayment(t *testing.T) {

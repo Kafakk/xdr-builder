@@ -19,7 +19,7 @@ func SetAsset(code, issuerPublicKey string) (respAsset Asset, err error) {
 	var issuer xdr.AccountId
 	err = issuer.SetAddress(issuerPublicKey)
 	if err != nil {
-		panic(err)
+		return respAsset, err
 	}
 	// var asset AssetHelp
 
@@ -37,7 +37,7 @@ func CreateAccount(destinationPublicKey string, startingBalance int) (respXDR st
 	var destination xdr.AccountId
 	err = destination.SetAddress(destinationPublicKey)
 	if err != nil {
-		panic(err)
+		return respXDR, err
 	}
 	op := xdr.CreateAccountOp{
 		Destination:     destination,
@@ -53,7 +53,7 @@ func Payment(destinationPublicKey string, asset Asset, amount int) (respXDR stri
 	var destination xdr.AccountId
 	err = destination.SetAddress(destinationPublicKey)
 	if err != nil {
-		panic(err)
+		return respXDR, err
 	}
 
 	op := xdr.PaymentOp{
@@ -71,7 +71,7 @@ func ManageOffer(selling Asset, buying Asset, amount int, priceString string) (r
 
 	price, err := price.Parse(priceString)
 	if err != nil {
-		panic(err)
+		return respXDR, err
 	}
 	op := xdr.ManageOfferOp{
 		Selling: selling.XDRAsset,
@@ -87,7 +87,7 @@ func CreatePassiveOffer(selling Asset, buying Asset, amount int, priceString str
 
 	price, err := price.Parse(priceString)
 	if err != nil {
-		panic(err)
+		return respXDR, err
 	}
 	op := xdr.CreatePassiveOfferOp{
 		Selling: selling.XDRAsset,
@@ -137,7 +137,7 @@ func AllowTrust(trustorPublicKey string, asset Asset, authorize bool) (respXDR s
 	var trustor xdr.AccountId
 	err = trustor.SetAddress(trustorPublicKey)
 	if err != nil {
-		panic(err)
+		return respXDR, err
 	}
 
 	op := xdr.AllowTrustOp{
@@ -154,7 +154,7 @@ func PathPayment(sendAsset Asset, sendMax int, destinationPublicKey string, dest
 	var destination xdr.AccountId
 	err = destination.SetAddress(destinationPublicKey)
 	if err != nil {
-		panic(err)
+		return respXDR, err
 	}
 	op := xdr.PathPaymentOp{
 		SendAsset:   sendAsset.XDRAsset,
@@ -209,7 +209,7 @@ func SetOption(inflationDestinationPublicKey string, clearFlag, setFlag, masterW
 	var destination xdr.AccountId
 	err = destination.SetAddress(inflationDestinationPublicKey)
 	if err != nil {
-		panic(err)
+		return respXDR, err
 	}
 	clearF := xdr.Uint32(clearFlag)
 	setF := xdr.Uint32(setFlag)
