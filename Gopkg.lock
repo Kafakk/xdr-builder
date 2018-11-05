@@ -10,6 +10,14 @@
   version = "v1.1.1"
 
 [[projects]]
+  branch = "master"
+  digest = "1:d1faaa584ff603079dfefd7ef9bc30e86aafed3d3d997b08ef8b4b1b4b8def0b"
+  name = "github.com/kafakk/xdr-builder"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "40f7db4f4c859e124daa630572cde1cd8cdcb6de"
+
+[[projects]]
   digest = "1:8ef506fc2bb9ced9b151dafa592d4046063d744c646c1bbe801982ce87e4bc24"
   name = "github.com/lib/pq"
   packages = [
@@ -70,6 +78,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/kafakk/xdr-builder",
     "github.com/stellar/go/price",
     "github.com/stellar/go/xdr",
     "github.com/stretchr/testify/assert",

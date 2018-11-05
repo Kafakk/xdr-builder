@@ -33,12 +33,16 @@ func SetNativeAsset() (respAsset Asset, err error) {
 	return respAsset, err
 }
 
-func CreateAccount(destinationPublicKey string, startingBalance int) (respXDR string, err error) {
+func CreateAccount(destinationPublicKey string, startingBalance uint64) (respXDR string, err error) {
 	var destination xdr.AccountId
 	err = destination.SetAddress(destinationPublicKey)
 	if err != nil {
 		return respXDR, err
 	}
+	// if startingBalance <= 0 {
+	// err = errors.New("startingBalance should more than 0")
+	// 	return respXDR, errors.New("startingBalance should more than 0")
+	// }
 	op := xdr.CreateAccountOp{
 		Destination:     destination,
 		StartingBalance: xdr.Int64(startingBalance) * 10000000,
@@ -49,7 +53,7 @@ func CreateAccount(destinationPublicKey string, startingBalance int) (respXDR st
 
 }
 
-func Payment(destinationPublicKey string, asset Asset, amount int) (respXDR string, err error) {
+func Payment(destinationPublicKey string, asset Asset, amount uint64) (respXDR string, err error) {
 	var destination xdr.AccountId
 	err = destination.SetAddress(destinationPublicKey)
 	if err != nil {
@@ -67,7 +71,7 @@ func Payment(destinationPublicKey string, asset Asset, amount int) (respXDR stri
 
 }
 
-func ManageOffer(selling Asset, buying Asset, amount int, priceString string) (respXDR string, err error) {
+func ManageOffer(selling Asset, buying Asset, amount uint64, priceString string) (respXDR string, err error) {
 
 	price, err := price.Parse(priceString)
 	if err != nil {
@@ -83,7 +87,7 @@ func ManageOffer(selling Asset, buying Asset, amount int, priceString string) (r
 	return respXDR, err
 }
 
-func CreatePassiveOffer(selling Asset, buying Asset, amount int, priceString string) (respXDR string, err error) {
+func CreatePassiveOffer(selling Asset, buying Asset, amount uint64, priceString string) (respXDR string, err error) {
 
 	price, err := price.Parse(priceString)
 	if err != nil {
@@ -149,7 +153,7 @@ func AllowTrust(trustorPublicKey string, asset Asset, authorize bool) (respXDR s
 	return respXDR, err
 }
 
-func PathPayment(sendAsset Asset, sendMax int, destinationPublicKey string, destAsset Asset, destAmount int, path Path) (respXDR string, err error) {
+func PathPayment(sendAsset Asset, sendMax uint64, destinationPublicKey string, destAsset Asset, destAmount int, path Path) (respXDR string, err error) {
 
 	var destination xdr.AccountId
 	err = destination.SetAddress(destinationPublicKey)
@@ -169,7 +173,7 @@ func PathPayment(sendAsset Asset, sendMax int, destinationPublicKey string, dest
 	return respXDR, err
 }
 
-func ChangeTrust(asset Asset, limit int) (respXDR string, err error) {
+func ChangeTrust(asset Asset, limit uint64) (respXDR string, err error) {
 	op := xdr.ChangeTrustOp{
 		Line:  asset.XDRAsset,
 		Limit: xdr.Int64(limit),
@@ -179,7 +183,7 @@ func ChangeTrust(asset Asset, limit int) (respXDR string, err error) {
 	return respXDR, err
 }
 
-func BumpSequence(sequenceNumber int) (respXDR string, err error) {
+func BumpSequence(sequenceNumber uint64) (respXDR string, err error) {
 	op := xdr.BumpSequenceOp{
 		BumpTo: xdr.SequenceNumber(sequenceNumber),
 	}
@@ -203,44 +207,80 @@ func ManageData(name, value string) (respXDR string, err error) {
 	return respXDR, err
 }
 
-func SetOption(inflationDestinationPublicKey string, clearFlag, setFlag, masterWeight,
-	lowThreshold, medThreshold, highThreshold uint32, homeDomain string, singerPublicKey string, singerWeight uint32) (respXDR string, err error) {
-
+func SetOptionInflation(inflationDestinationPublicKey string) (respXDR string, err error) {
 	var destination xdr.AccountId
 	err = destination.SetAddress(inflationDestinationPublicKey)
 	if err != nil {
 		return respXDR, err
 	}
-	clearF := xdr.Uint32(clearFlag)
-	setF := xdr.Uint32(setFlag)
-	masterW := xdr.Uint32(masterWeight)
-	lowT := xdr.Uint32(lowThreshold)
-	medT := xdr.Uint32(medThreshold)
-	highT := xdr.Uint32(highThreshold)
-	homeD := xdr.String32(homeDomain)
-	var signer xdr.Signer
-	signer.Weight = xdr.Uint32(singerWeight)
-	err = signer.Key.SetAddress(singerPublicKey)
-	if err != nil {
-		panic(err)
-	}
-
 	op := xdr.SetOptionsOp{
 		InflationDest: &destination,
-		ClearFlags:    &clearF,
-		SetFlags:      &setF,
-		MasterWeight:  &masterW,
-		LowThreshold:  &lowT,
-		MedThreshold:  &medT,
-		HighThreshold: &highT,
-		HomeDomain:    &homeD,
-		Signer:        &signer,
 	}
 	respXDR, err = xdr.MarshalBase64(op)
 
 	return respXDR, err
 }
 
-//Not found yet
-// func AccountMerge() {
-// }
+func SetOptionClearFlags(clearF uint32) (respXDR string, err error) {
+	clearFlag := xdr.Uint32(clearF)
+	op := xdr.SetOptionsOp{
+		ClearFlags: &clearFlag,
+	}
+	respXDR, err = xdr.MarshalBase64(op)
+
+	return respXDR, err
+}
+
+func SetOptionSetFlags(setF uint32) (respXDR string, err error) {
+	setFlag := xdr.Uint32(setF)
+	op := xdr.SetOptionsOp{
+		SetFlags: &setFlag,
+	}
+	respXDR, err = xdr.MarshalBase64(op)
+
+	return respXDR, err
+}
+
+func SetOptionThreshold(masterW, lowT, mediumT, highT uint32) (respXDR string, err error) {
+	masterWeight := xdr.Uint32(masterW)
+	lowThreshold := xdr.Uint32(lowT)
+	medThreshold := xdr.Uint32(mediumT)
+	highThreshold := xdr.Uint32(highT)
+
+	op := xdr.SetOptionsOp{
+		MasterWeight:  &masterWeight,
+		LowThreshold:  &lowThreshold,
+		MedThreshold:  &medThreshold,
+		HighThreshold: &highThreshold,
+	}
+	respXDR, err = xdr.MarshalBase64(op)
+
+	return respXDR, err
+}
+
+func SetOptionHomeDomain(domain string) (respXDR string, err error) {
+
+	homeDomain := xdr.String32(domain)
+	op := xdr.SetOptionsOp{
+		HomeDomain: &homeDomain,
+	}
+	respXDR, err = xdr.MarshalBase64(op)
+
+	return respXDR, err
+}
+
+func SetOptionSigner(singerPublicKey string, singerWeight uint32) (respXDR string, err error) {
+	var signer xdr.Signer
+	signer.Weight = xdr.Uint32(singerWeight)
+	err = signer.Key.SetAddress(singerPublicKey)
+	if err != nil {
+		return respXDR, err
+	}
+
+	op := xdr.SetOptionsOp{
+		Signer: &signer,
+	}
+	respXDR, err = xdr.MarshalBase64(op)
+
+	return respXDR, err
+}
