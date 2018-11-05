@@ -1,7 +1,7 @@
 package xdrbuilder_test
 
 import (
-	xdrHelper "stellar-xdr-helper"
+	xdrHelper "github.com/kafakk/xdr-builder"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
