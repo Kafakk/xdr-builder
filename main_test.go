@@ -1,9 +1,8 @@
-package xdrbuilder_test
+package main
 
 import (
 	"testing"
 
-	xdrHelper "github.com/kafakk/xdr-builder"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -11,21 +10,21 @@ func TestSetAsset(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		code := "ABC"
 		issuerPublicKey := "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR"
-		resp, err := xdrHelper.SetAsset(code, issuerPublicKey)
+		resp, err := SetAsset(code, issuerPublicKey)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 	})
 	t.Run("Fail, wrong issuerPublicKey", func(t *testing.T) {
 		code := "ABC"
 		issuerPublicKey := "asfewAS"
-		_, err := xdrHelper.SetAsset(code, issuerPublicKey)
+		_, err := SetAsset(code, issuerPublicKey)
 		assert.Error(t, err)
 	})
 
 }
 
 func TestSetNativeAsset(t *testing.T) {
-	resp, err := xdrHelper.SetNativeAsset()
+	resp, err := SetNativeAsset()
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 }
@@ -35,7 +34,7 @@ func TestCreateAccount(t *testing.T) {
 		destinationPublicKey := "GDKV36XRERL7HVQ5GKRAV47ZLEPIZMFM7MMLEO4NKQOWFPL5NCIEW3GR"
 		var startingBalance uint64
 		startingBalance = 100
-		resp, err := xdrHelper.CreateAccount(destinationPublicKey, startingBalance)
+		resp, err := CreateAccount(destinationPublicKey, startingBalance)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 	})
@@ -43,7 +42,7 @@ func TestCreateAccount(t *testing.T) {
 		destinationPublicKey := "asdqw"
 		var startingBalance uint64
 		startingBalance = 100
-		_, err := xdrHelper.CreateAccount(destinationPublicKey, startingBalance)
+		_, err := CreateAccount(destinationPublicKey, startingBalance)
 		assert.Error(t, err)
 	})
 
@@ -52,26 +51,26 @@ func TestCreateAccount(t *testing.T) {
 func TestPayment(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		destinationPublicKey := "GDKV36XRERL7HVQ5GKRAV47ZLEPIZMFM7MMLEO4NKQOWFPL5NCIEW3GR"
-		asset, err := xdrHelper.SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+		asset, err := SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
 		var amount uint64
 		amount = 100
-		resp, err := xdrHelper.Payment(destinationPublicKey, asset, amount)
+		resp, err := Payment(destinationPublicKey, asset, amount)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 	})
 
 	t.Run("Fail, wrong issuerPublicKey", func(t *testing.T) {
 		destinationPublicKey := "ssASdasewq"
-		asset, err := xdrHelper.SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+		asset, err := SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
 		var amount uint64
 		amount = 100
-		_, err = xdrHelper.Payment(destinationPublicKey, asset, amount)
+		_, err = Payment(destinationPublicKey, asset, amount)
 		assert.Error(t, err)
 	})
 
@@ -79,68 +78,68 @@ func TestPayment(t *testing.T) {
 
 func TestManageOffer(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
-		sellingAsset, err := xdrHelper.SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+		sellingAsset, err := SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
-		buyingAsset, err := xdrHelper.SetNativeAsset()
+		buyingAsset, err := SetNativeAsset()
 		if err != nil {
 			panic(err)
 		}
 		var amount uint64
 		amount = 1000
 		pricestring := "7.2"
-		resp, err := xdrHelper.ManageOffer(sellingAsset, buyingAsset, amount, pricestring)
+		resp, err := ManageOffer(sellingAsset, buyingAsset, amount, pricestring)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 	})
 	t.Run("Fail, wrong priceString", func(t *testing.T) {
-		sellingAsset, err := xdrHelper.SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+		sellingAsset, err := SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
-		buyingAsset, err := xdrHelper.SetNativeAsset()
+		buyingAsset, err := SetNativeAsset()
 		if err != nil {
 			panic(err)
 		}
 		var amount uint64
 		amount = 1000
 		pricestring := "ABC"
-		_, err = xdrHelper.ManageOffer(sellingAsset, buyingAsset, amount, pricestring)
+		_, err = ManageOffer(sellingAsset, buyingAsset, amount, pricestring)
 		assert.Error(t, err)
 	})
 }
 
 func TestCreatePassiveOffer(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
-		sellingAsset, err := xdrHelper.SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+		sellingAsset, err := SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
-		buyingAsset, err := xdrHelper.SetNativeAsset()
+		buyingAsset, err := SetNativeAsset()
 		if err != nil {
 			panic(err)
 		}
 		var amount uint64
 		amount = 10000
 		pricestring := "6.2"
-		resp, err := xdrHelper.CreatePassiveOffer(sellingAsset, buyingAsset, amount, pricestring)
+		resp, err := CreatePassiveOffer(sellingAsset, buyingAsset, amount, pricestring)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 	})
 	t.Run("Fail, wrong priceString", func(t *testing.T) {
-		sellingAsset, err := xdrHelper.SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+		sellingAsset, err := SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
-		buyingAsset, err := xdrHelper.SetNativeAsset()
+		buyingAsset, err := SetNativeAsset()
 		if err != nil {
 			panic(err)
 		}
 		var amount uint64
 		amount = 10000
 		pricestring := "AWSD"
-		_, err = xdrHelper.CreatePassiveOffer(sellingAsset, buyingAsset, amount, pricestring)
+		_, err = CreatePassiveOffer(sellingAsset, buyingAsset, amount, pricestring)
 		assert.Error(t, err)
 	})
 }
@@ -148,112 +147,112 @@ func TestCreatePassiveOffer(t *testing.T) {
 func TestAllowTrust(t *testing.T) {
 	t.Run("Success, AlphaNum4", func(t *testing.T) {
 		trustorPublicKey := "GDKV36XRERL7HVQ5GKRAV47ZLEPIZMFM7MMLEO4NKQOWFPL5NCIEW3GR"
-		asset, err := xdrHelper.SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+		asset, err := SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
 		authorize := true
-		resp, err := xdrHelper.AllowTrust(trustorPublicKey, asset, authorize)
+		resp, err := AllowTrust(trustorPublicKey, asset, authorize)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 	})
 
 	t.Run("Success, AlphaNum12", func(t *testing.T) {
 		trustorPublicKey := "GDKV36XRERL7HVQ5GKRAV47ZLEPIZMFM7MMLEO4NKQOWFPL5NCIEW3GR"
-		asset, err := xdrHelper.SetAsset("ABCDEFGHSSS", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+		asset, err := SetAsset("ABCDEFGHSSS", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
 		authorize := true
-		resp, err := xdrHelper.AllowTrust(trustorPublicKey, asset, authorize)
+		resp, err := AllowTrust(trustorPublicKey, asset, authorize)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 	})
 
 	t.Run("Success, Native", func(t *testing.T) {
 		trustorPublicKey := "GDKV36XRERL7HVQ5GKRAV47ZLEPIZMFM7MMLEO4NKQOWFPL5NCIEW3GR"
-		asset, err := xdrHelper.SetNativeAsset()
+		asset, err := SetNativeAsset()
 		if err != nil {
 			panic(err)
 		}
 		authorize := true
-		resp, err := xdrHelper.AllowTrust(trustorPublicKey, asset, authorize)
+		resp, err := AllowTrust(trustorPublicKey, asset, authorize)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 	})
 
 	t.Run("Fail, wrong trustorPublicKey", func(t *testing.T) {
 		trustorPublicKey := "sdwqwwqssasd"
-		asset, err := xdrHelper.SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+		asset, err := SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
 		authorize := true
-		_, err = xdrHelper.AllowTrust(trustorPublicKey, asset, authorize)
+		_, err = AllowTrust(trustorPublicKey, asset, authorize)
 		assert.Error(t, err)
 	})
 }
 
 func TestPathPayment(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
-		sendAsset, err := xdrHelper.SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+		sendAsset, err := SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
 		var sendMax uint64
 		sendMax = 100
 		destinationPublicKey := "GCIQJ3JRXEEAKFL22C43X66B4NKACPWZ27WIMNXGA5CIEHOYWNXD3EQR"
-		destAsset, err := xdrHelper.SetAsset("CDF", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+		destAsset, err := SetAsset("CDF", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
 		var destAmount uint64
 		destAmount = 30
-		tempAsset1, err := xdrHelper.SetNativeAsset()
+		tempAsset1, err := SetNativeAsset()
 		if err != nil {
 			panic(err)
 		}
-		var path xdrHelper.Path
+		var path Path
 		path.XDRAsset = append(path.XDRAsset, tempAsset1.XDRAsset)
 
-		resp, err := xdrHelper.PathPayment(sendAsset, sendMax, destinationPublicKey, destAsset, destAmount, path)
+		resp, err := PathPayment(sendAsset, sendMax, destinationPublicKey, destAsset, destAmount, path)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 	})
 	t.Run("Fail, wrong destinationPublicKey", func(t *testing.T) {
-		sendAsset, err := xdrHelper.SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+		sendAsset, err := SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
 		var sendMax uint64
 		sendMax = 100
 		destinationPublicKey := "sdfse"
-		destAsset, err := xdrHelper.SetAsset("CDF", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+		destAsset, err := SetAsset("CDF", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
 		var destAmount uint64
 		destAmount = 30
-		tempAsset1, err := xdrHelper.SetNativeAsset()
+		tempAsset1, err := SetNativeAsset()
 		if err != nil {
 			panic(err)
 		}
-		var path xdrHelper.Path
+		var path Path
 		path.XDRAsset = append(path.XDRAsset, tempAsset1.XDRAsset)
 
-		_, err = xdrHelper.PathPayment(sendAsset, sendMax, destinationPublicKey, destAsset, destAmount, path)
+		_, err = PathPayment(sendAsset, sendMax, destinationPublicKey, destAsset, destAmount, path)
 		assert.Error(t, err)
 	})
 }
 
 func TestChangeTrust(t *testing.T) {
-	asset, err := xdrHelper.SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+	asset, err := SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 	if err != nil {
 		panic(err)
 	}
 	var limit uint64
 	limit = 1000
-	resp, err := xdrHelper.ChangeTrust(asset, limit)
+	resp, err := ChangeTrust(asset, limit)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 }
@@ -261,7 +260,7 @@ func TestChangeTrust(t *testing.T) {
 func TestBumpSequence(t *testing.T) {
 	var sequenceNumber uint64
 	sequenceNumber = 1008097543847999
-	resp, err := xdrHelper.BumpSequence(sequenceNumber)
+	resp, err := BumpSequence(sequenceNumber)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 }
@@ -269,7 +268,7 @@ func TestBumpSequence(t *testing.T) {
 func TestManageData(t *testing.T) {
 	name := "name"
 	value := "value"
-	resp, err := xdrHelper.ManageData(name, value)
+	resp, err := ManageData(name, value)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 }
@@ -277,13 +276,13 @@ func TestManageData(t *testing.T) {
 func TestSetOptionInflation(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		inflationDestinationPublicKey := "GCIQJ3JRXEEAKFL22C43X66B4NKACPWZ27WIMNXGA5CIEHOYWNXD3EQR"
-		resp, err := xdrHelper.SetOptionInflation(inflationDestinationPublicKey)
+		resp, err := SetOptionInflation(inflationDestinationPublicKey)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 	})
 	t.Run("Fail, wrong inflationDestinationPublicKey", func(t *testing.T) {
 		inflationDestinationPublicKey := "Sqwes"
-		_, err := xdrHelper.SetOptionInflation(inflationDestinationPublicKey)
+		_, err := SetOptionInflation(inflationDestinationPublicKey)
 		assert.Error(t, err)
 	})
 }
@@ -291,7 +290,7 @@ func TestSetOptionInflation(t *testing.T) {
 func TestSetOptionClearFlags(t *testing.T) {
 	var clearFlag uint32
 	clearFlag = 2
-	resp, err := xdrHelper.SetOptionClearFlags(clearFlag)
+	resp, err := SetOptionClearFlags(clearFlag)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 }
@@ -299,7 +298,7 @@ func TestSetOptionClearFlags(t *testing.T) {
 func TestSetOptionSetFlags(t *testing.T) {
 	var setFlag uint32
 	setFlag = 1
-	resp, err := xdrHelper.SetOptionSetFlags(setFlag)
+	resp, err := SetOptionSetFlags(setFlag)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 }
@@ -307,7 +306,7 @@ func TestSetOptionSetFlags(t *testing.T) {
 func TestSetOptionMasterWeight(t *testing.T) {
 	var masterWeight uint32
 	masterWeight = 4
-	resp, err := xdrHelper.SetOptionMasterWeight(masterWeight)
+	resp, err := SetOptionMasterWeight(masterWeight)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 }
@@ -319,14 +318,14 @@ func TestSetOptionThreshold(t *testing.T) {
 	lowThreshold = 1
 	medThreshold = 2
 	highThreshold = 4
-	resp, err := xdrHelper.SetOptionThreshold(lowThreshold, medThreshold, highThreshold)
+	resp, err := SetOptionThreshold(lowThreshold, medThreshold, highThreshold)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 }
 
 func TestSetOptionHomeDomain(t *testing.T) {
 	domain := "r0ix.com"
-	resp, err := xdrHelper.SetOptionHomeDomain(domain)
+	resp, err := SetOptionHomeDomain(domain)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 }
@@ -336,7 +335,7 @@ func TestSetOptionSigner(t *testing.T) {
 		singerPublicKey := "GBBDXCEBXA3HGMB5NJ6VUOPXJQDL76YXII6HKBHRXBBJK4MB22WE7AFO"
 		var singerWeight uint32
 		singerWeight = 2
-		resp, err := xdrHelper.SetOptionSigner(singerPublicKey, singerWeight)
+		resp, err := SetOptionSigner(singerPublicKey, singerWeight)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 	})
@@ -344,7 +343,7 @@ func TestSetOptionSigner(t *testing.T) {
 		singerPublicKey := "sadsawq"
 		var singerWeight uint32
 		singerWeight = 2
-		_, err := xdrHelper.SetOptionSigner(singerPublicKey, singerWeight)
+		_, err := SetOptionSigner(singerPublicKey, singerWeight)
 		assert.Error(t, err)
 	})
 

@@ -1,4 +1,4 @@
-package xdrbuilder
+package main
 
 import (
 	"fmt"
