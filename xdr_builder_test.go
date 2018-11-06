@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	xdrHelper "github.com/kafakk/xdr-builder"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -34,23 +33,19 @@ func TestSetNativeAsset(t *testing.T) {
 func TestCreateAccount(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		destinationPublicKey := "GDKV36XRERL7HVQ5GKRAV47ZLEPIZMFM7MMLEO4NKQOWFPL5NCIEW3GR"
-		startingBalance := 100
+		var startingBalance uint64
+		startingBalance = 100
 		resp, err := xdrHelper.CreateAccount(destinationPublicKey, startingBalance)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 	})
 	t.Run("Fail, wrong issuerPublicKey", func(t *testing.T) {
 		destinationPublicKey := "asdqw"
-		startingBalance := 100
+		var startingBalance uint64
+		startingBalance = 100
 		_, err := xdrHelper.CreateAccount(destinationPublicKey, startingBalance)
 		assert.Error(t, err)
 	})
-	// t.Run("Fail, wrong startingBalance", func(t *testing.T) {
-	// 	destinationPublicKey := "GDKV36XRERL7HVQ5GKRAV47ZLEPIZMFM7MMLEO4NKQOWFPL5NCIEW3GR"
-	// 	startingBalance := -1
-	// 	_, err := xdrHelper.CreateAccount(destinationPublicKey, startingBalance)
-	// 	assert.Error(t, err)
-	// })
 
 }
 
@@ -61,7 +56,8 @@ func TestPayment(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		amount := 100
+		var amount uint64
+		amount = 100
 		resp, err := xdrHelper.Payment(destinationPublicKey, asset, amount)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
@@ -73,7 +69,8 @@ func TestPayment(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		amount := 100
+		var amount uint64
+		amount = 100
 		_, err = xdrHelper.Payment(destinationPublicKey, asset, amount)
 		assert.Error(t, err)
 	})
@@ -90,7 +87,8 @@ func TestManageOffer(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		amount := 1000
+		var amount uint64
+		amount = 1000
 		pricestring := "7.2"
 		resp, err := xdrHelper.ManageOffer(sellingAsset, buyingAsset, amount, pricestring)
 		assert.NoError(t, err)
@@ -105,7 +103,8 @@ func TestManageOffer(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		amount := 1000
+		var amount uint64
+		amount = 1000
 		pricestring := "ABC"
 		_, err = xdrHelper.ManageOffer(sellingAsset, buyingAsset, amount, pricestring)
 		assert.Error(t, err)
@@ -122,7 +121,8 @@ func TestCreatePassiveOffer(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		amount := 10000
+		var amount uint64
+		amount = 10000
 		pricestring := "6.2"
 		resp, err := xdrHelper.CreatePassiveOffer(sellingAsset, buyingAsset, amount, pricestring)
 		assert.NoError(t, err)
@@ -137,7 +137,8 @@ func TestCreatePassiveOffer(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		amount := 10000
+		var amount uint64
+		amount = 10000
 		pricestring := "AWSD"
 		_, err = xdrHelper.CreatePassiveOffer(sellingAsset, buyingAsset, amount, pricestring)
 		assert.Error(t, err)
@@ -145,7 +146,7 @@ func TestCreatePassiveOffer(t *testing.T) {
 }
 
 func TestAllowTrust(t *testing.T) {
-	t.Run("Success", func(t *testing.T) {
+	t.Run("Success, AlphaNum4", func(t *testing.T) {
 		trustorPublicKey := "GDKV36XRERL7HVQ5GKRAV47ZLEPIZMFM7MMLEO4NKQOWFPL5NCIEW3GR"
 		asset, err := xdrHelper.SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
@@ -156,6 +157,31 @@ func TestAllowTrust(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 	})
+
+	t.Run("Success, AlphaNum12", func(t *testing.T) {
+		trustorPublicKey := "GDKV36XRERL7HVQ5GKRAV47ZLEPIZMFM7MMLEO4NKQOWFPL5NCIEW3GR"
+		asset, err := xdrHelper.SetAsset("ABCDEFGHSSS", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
+		if err != nil {
+			panic(err)
+		}
+		authorize := true
+		resp, err := xdrHelper.AllowTrust(trustorPublicKey, asset, authorize)
+		assert.NoError(t, err)
+		assert.NotNil(t, resp)
+	})
+
+	t.Run("Success, Native", func(t *testing.T) {
+		trustorPublicKey := "GDKV36XRERL7HVQ5GKRAV47ZLEPIZMFM7MMLEO4NKQOWFPL5NCIEW3GR"
+		asset, err := xdrHelper.SetNativeAsset()
+		if err != nil {
+			panic(err)
+		}
+		authorize := true
+		resp, err := xdrHelper.AllowTrust(trustorPublicKey, asset, authorize)
+		assert.NoError(t, err)
+		assert.NotNil(t, resp)
+	})
+
 	t.Run("Fail, wrong trustorPublicKey", func(t *testing.T) {
 		trustorPublicKey := "sdwqwwqssasd"
 		asset, err := xdrHelper.SetAsset("ABC", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
@@ -174,13 +200,15 @@ func TestPathPayment(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		sendMax := 100
+		var sendMax uint64
+		sendMax = 100
 		destinationPublicKey := "GCIQJ3JRXEEAKFL22C43X66B4NKACPWZ27WIMNXGA5CIEHOYWNXD3EQR"
 		destAsset, err := xdrHelper.SetAsset("CDF", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
-		destAmount := 30
+		var destAmount uint64
+		destAmount = 30
 		tempAsset1, err := xdrHelper.SetNativeAsset()
 		if err != nil {
 			panic(err)
@@ -197,13 +225,15 @@ func TestPathPayment(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		sendMax := 100
+		var sendMax uint64
+		sendMax = 100
 		destinationPublicKey := "sdfse"
 		destAsset, err := xdrHelper.SetAsset("CDF", "GAEBJVQJJO5ZPRJ2ZPNSDJLMNN64REZO7S5VUZAMNLI34B5XUQVD3URR")
 		if err != nil {
 			panic(err)
 		}
-		destAmount := 30
+		var destAmount uint64
+		destAmount = 30
 		tempAsset1, err := xdrHelper.SetNativeAsset()
 		if err != nil {
 			panic(err)
@@ -221,14 +251,16 @@ func TestChangeTrust(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	limit := 1000
+	var limit uint64
+	limit = 1000
 	resp, err := xdrHelper.ChangeTrust(asset, limit)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 }
 
 func TestBumpSequence(t *testing.T) {
-	sequenceNumber := 1008097543847999
+	var sequenceNumber uint64
+	sequenceNumber = 1008097543847999
 	resp, err := xdrHelper.BumpSequence(sequenceNumber)
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
@@ -254,4 +286,66 @@ func TestSetOptionInflation(t *testing.T) {
 		_, err := xdrHelper.SetOptionInflation(inflationDestinationPublicKey)
 		assert.Error(t, err)
 	})
+}
+
+func TestSetOptionClearFlags(t *testing.T) {
+	var clearFlag uint32
+	clearFlag = 2
+	resp, err := xdrHelper.SetOptionClearFlags(clearFlag)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+}
+
+func TestSetOptionSetFlags(t *testing.T) {
+	var setFlag uint32
+	setFlag = 1
+	resp, err := xdrHelper.SetOptionSetFlags(setFlag)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+}
+
+func TestSetOptionMasterWeight(t *testing.T) {
+	var masterWeight uint32
+	masterWeight = 4
+	resp, err := xdrHelper.SetOptionMasterWeight(masterWeight)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+}
+
+func TestSetOptionThreshold(t *testing.T) {
+	var lowThreshold uint32
+	var medThreshold uint32
+	var highThreshold uint32
+	lowThreshold = 1
+	medThreshold = 2
+	highThreshold = 4
+	resp, err := xdrHelper.SetOptionThreshold(lowThreshold, medThreshold, highThreshold)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+}
+
+func TestSetOptionHomeDomain(t *testing.T) {
+	domain := "r0ix.com"
+	resp, err := xdrHelper.SetOptionHomeDomain(domain)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+}
+
+func TestSetOptionSigner(t *testing.T) {
+	t.Run("Success", func(t *testing.T) {
+		singerPublicKey := "GBBDXCEBXA3HGMB5NJ6VUOPXJQDL76YXII6HKBHRXBBJK4MB22WE7AFO"
+		var singerWeight uint32
+		singerWeight = 2
+		resp, err := xdrHelper.SetOptionSigner(singerPublicKey, singerWeight)
+		assert.NoError(t, err)
+		assert.NotNil(t, resp)
+	})
+	t.Run("Fail, wrong singerPublicKey", func(t *testing.T) {
+		singerPublicKey := "sadsawq"
+		var singerWeight uint32
+		singerWeight = 2
+		_, err := xdrHelper.SetOptionSigner(singerPublicKey, singerWeight)
+		assert.Error(t, err)
+	})
+
 }

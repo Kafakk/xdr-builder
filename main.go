@@ -39,10 +39,6 @@ func CreateAccount(destinationPublicKey string, startingBalance uint64) (respXDR
 	if err != nil {
 		return respXDR, err
 	}
-	// if startingBalance <= 0 {
-	// err = errors.New("startingBalance should more than 0")
-	// 	return respXDR, errors.New("startingBalance should more than 0")
-	// }
 	op := xdr.CreateAccountOp{
 		Destination:     destination,
 		StartingBalance: xdr.Int64(startingBalance) * 10000000,
@@ -106,34 +102,30 @@ func CreatePassiveOffer(selling Asset, buying Asset, amount uint64, priceString 
 
 func AllowTrust(trustorPublicKey string, asset Asset, authorize bool) (respXDR string, err error) {
 
-	// asset.Extract(asset.Type)
-
-	// var assetType xdr.AllowTrustOpAsset
 	var allowTrustAsset xdr.AllowTrustOpAsset
 
 	assetType := asset.XDRAsset.Type
-
-	fmt.Println(assetType)
+	fmt.Println("asset Type: ", assetType)
 
 	switch assetType {
-	case 0:
-		return "This is Native Asset", nil
-	case 1:
+	case xdr.AssetTypeAssetTypeNative:
+		return respXDR, nil
+	case xdr.AssetTypeAssetTypeCreditAlphanum4:
 		code, ok := asset.XDRAsset.GetAlphaNum4()
-		if ok == false {
-			panic("The value is not valid")
+		if !ok {
+			return "The value is not valid AlphaNum4", err
 		}
 		allowTrustAsset = xdr.AllowTrustOpAsset{
-			Type:       1,
+			Type:       xdr.AssetTypeAssetTypeCreditAlphanum4,
 			AssetCode4: &code.AssetCode,
 		}
-	case 2:
+	case xdr.AssetTypeAssetTypeCreditAlphanum12:
 		code, ok := asset.XDRAsset.GetAlphaNum12()
-		if ok == false {
-			panic("The value is not valid")
+		if !ok {
+			return "The value is not valid AlphaNum12", err
 		}
 		allowTrustAsset = xdr.AllowTrustOpAsset{
-			Type:        1,
+			Type:        xdr.AssetTypeAssetTypeCreditAlphanum12,
 			AssetCode12: &code.AssetCode,
 		}
 	}
@@ -153,7 +145,7 @@ func AllowTrust(trustorPublicKey string, asset Asset, authorize bool) (respXDR s
 	return respXDR, err
 }
 
-func PathPayment(sendAsset Asset, sendMax uint64, destinationPublicKey string, destAsset Asset, destAmount int, path Path) (respXDR string, err error) {
+func PathPayment(sendAsset Asset, sendMax uint64, destinationPublicKey string, destAsset Asset, destAmount uint64, path Path) (respXDR string, err error) {
 
 	var destination xdr.AccountId
 	err = destination.SetAddress(destinationPublicKey)
@@ -241,20 +233,26 @@ func SetOptionSetFlags(setF uint32) (respXDR string, err error) {
 	return respXDR, err
 }
 
-func SetOptionThreshold(masterW, lowT, mediumT, highT uint32) (respXDR string, err error) {
+func SetOptionMasterWeight(masterW uint32) (respXDR string, err error) {
 	masterWeight := xdr.Uint32(masterW)
+	op := xdr.SetOptionsOp{
+		MasterWeight: &masterWeight,
+	}
+	respXDR, err = xdr.MarshalBase64(op)
+	return respXDR, err
+}
+
+func SetOptionThreshold(lowT, mediumT, highT uint32) (respXDR string, err error) {
 	lowThreshold := xdr.Uint32(lowT)
 	medThreshold := xdr.Uint32(mediumT)
 	highThreshold := xdr.Uint32(highT)
 
 	op := xdr.SetOptionsOp{
-		MasterWeight:  &masterWeight,
 		LowThreshold:  &lowThreshold,
 		MedThreshold:  &medThreshold,
 		HighThreshold: &highThreshold,
 	}
 	respXDR, err = xdr.MarshalBase64(op)
-
 	return respXDR, err
 }
 
